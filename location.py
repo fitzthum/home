@@ -14,9 +14,7 @@ def get_location():
 
   person = list(service.get_all_people())[0]
   for location in settings.locations:
-    print(person.longitude,person.latitude)
     dist = geodesic((person.latitude,person.longitude),location[1]).miles 
-    print(dist)
     if dist <= location[2]:
       return location[0]
 

@@ -19,26 +19,31 @@ class Scheduler:
     
     self.day = Day(calendar)
     self.schedule = [
-      (settings.wakeUpTime,day.wakeUp),
-      (settings.leaveAptTime,day.leaveApt),
-      (settings.arriveWorkTime,day.arriveWork),
-      (settings.leaveWorkTime,day.leaveWork),
-      (settings.arriveAptTime,day.arriveApt),
-      (settings.prepSleepTime,day.prepSleep),
-      (settings.goSleepTime,day.goSleep),
-      (settings.crunchTime,day.crunch)]
-  
+      (settings.wakeUpTime,self.day.wakeUp),
+      (settings.leaveAptTime,self.day.leaveApt),
+      (settings.arriveWorkTime,self.day.arriveWork),
+      (settings.leaveWorkTime,self.day.leaveWork),
+      (settings.arriveAptTime,self.day.arriveApt),
+      (settings.prepSleepTime,self.day.prepSleep),
+      (settings.goSleepTime,self.day.goSleep),
+      (settings.crunchTime,self.day.crunch)]
+    
+    # hopefully this is not a copy...
+    self.day.schedule = self.schedule
 
   def start(self):
     self.watchdog()
   def watchdog(self):
     self.logger.info("Watchdog started.")
     while(1):
-      location = location.get_location()
+      print("Watchdogging")
+
+      loc = location.get_location()
       current_time = time.localtime(time.time()) 
-      for event in schedule:
+      for event in self.schedule:
         if event[0].isTime(current_time):
-          event[1](location)
+          event[1](loc)
+          event[0].is_triggered = True
 
       time.sleep(settings.watchdog_duty_cycle)
 
@@ -47,7 +52,7 @@ class Scheduler:
 
 class Day:
   def __init__(self,calendar):
-    this.calendar = calendar
+    self.calendar = calendar
 
   def wakeUp(self,loc):
     if loc == "apt":
@@ -89,14 +94,15 @@ class Day:
       pass
 
   def goSleep(self,loc):
-    if loc = "apt":
+    if loc == "apt":
       pass
         
   def crunch(self,loc):
     self.calendar.update()
-
+    for event in self.schedule:
+      event[0].is_triggered = False
 
 if __name__ == "__main__":
-  calendar = Calendar()
+  calendar = calendar.Calendar()
   scheduler = Scheduler(calendar)
-  scheduler.run()
+  scheduler.start()
