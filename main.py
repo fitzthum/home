@@ -2,10 +2,10 @@ import settings
 import location 
 import notify 
 import logging 
-import time
 import event 
 import calendar
 
+import time
 # TODO:
 # - workdays vs weekend - ignore weekend
 # - display
@@ -35,8 +35,12 @@ class Scheduler:
     self.logger.info("Watchdog started.")
     while(1):
       location = location.get_location()
+      current_time = time.localtime(time.time()) 
+      for event in schedule:
+        if event[0].isTime(current_time):
+          event[1](location)
 
-      time.sleep(10000)
+      time.sleep(settings.watchdog_duty_cycle)
 
 
 
@@ -59,7 +63,7 @@ class Day:
 
       # let's look at soem events
       # TODO: some way to increase priority of events from phone 
-      notify.email("Upcoming Events",calendar.short_view())
+      notify.email("Upcoming Events",calendar.getAllEventsTxt())
       pass
     else:
       # took a later train? 
